@@ -1,35 +1,29 @@
 const express = require("express");
 const app = express();
-
-app.use(express.static("public")); // Sert le dossier public
+app.use(express.static("public"));
 
 app.get("/api/denji", (req, res) => {
-  const { chat, sender, text } = req.query;
+  const { text } = req.query;
 
   if (!text) {
-    return res.json({ status: false, message: "Pas de texte reçu." });
+    return res.json({ status: false, message: "Aucun texte reçu." });
   }
 
-  // Choix simple du sticker en fonction du texte (exemple)
-  const lowerText = text.toLowerCase();
+  const lower = text.toLowerCase();
+  let sticker = "https://denji-api-miudys-projects.vercel.app/stickers/denji-happy.webp";
 
-  let stickerUrl =
-    "https://denji-api.vercel.app/stickers/denji-happy.webp";
-
-  if (lowerText.includes("fâché") || lowerText.includes("colère")) {
-    stickerUrl = "https://denji-api.vercel.app/stickers/denji-angry.webp";
+  if (lower.includes("colère") || lower.includes("fâché")) {
+    sticker = "https://denji-api-miudys-projects.vercel.app/stickers/denji-angry.webp";
   }
 
-  const response = {
+  res.json({
     status: true,
     message: {
       message: `Denji a reçu: "${text}"`,
-      sticker: stickerUrl,
+      sticker,
     },
-  };
-
-  res.json(response);
+  });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`API Denji lancée sur le port ${PORT}`));
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Denji API lancée sur le port ${port}`));
