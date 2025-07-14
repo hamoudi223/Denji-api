@@ -4,16 +4,15 @@ app.use(express.static("public"));
 
 app.get("/api/denji", (req, res) => {
   const { text } = req.query;
-
   if (!text) {
     return res.json({ status: false, message: "Aucun texte reçu." });
   }
 
   const lower = text.toLowerCase();
-  let sticker = "https://denji-api-miudys-projects.vercel.app/stickers/denji-happy.webp";
+  let sticker = "https://denji-api.vercel.app/stickers/denji-happy.webp";
 
-  if (lower.includes("colère") || lower.includes("fâché")) {
-    sticker = "https://denji-api-miudys-projects.vercel.app/stickers/denji-angry.webp";
+  if (lower.includes("colère") || lower.includes("fâché") || lower.includes("énervé")) {
+    sticker = "https://denji-api.vercel.app/stickers/denji-angry.webp";
   }
 
   res.json({
