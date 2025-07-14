@@ -1,73 +1,35 @@
 const express = require("express");
-const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
-
-const OWNER_NUMBER = "22395064497"; // Ton numéro WA complet ici
-const OWNER_NAME = "Moudy";
-
-// Quelques stickers Denji en ligne ou tu peux mettre tes liens
-const stickers = [
-  "https://i.imgur.com/6X9BhJ7.webp", // exemple sticker 1
-  "https://i.imgur.com/Q1WpkRC.webp", // exemple sticker 2
-  "https://i.imgur.com/jW4OtM9.webp"  // exemple sticker 3
-];
-
-function getRandomSticker() {
-  return stickers[Math.floor(Math.random() * stickers.length)];
-}
+app.use(express.static("public")); // Sert le dossier public
 
 app.get("/api/denji", (req, res) => {
-  const { sender, text } = req.query;
+  const { chat, sender, text } = req.query;
 
   if (!text) {
-    return res.json({ status: false, message: "Aucun texte reçu" });
+    return res.json({ status: false, message: "Pas de texte reçu." });
   }
 
-  const message = text.toLowerCase();
+  // Choix simple du sticker en fonction du texte (exemple)
+  const lowerText = text.toLowerCase();
 
-  // Si demande sur le propriétaire / créateur
-  if (
-    message.includes("qui t'a créé") ||
-    message.includes("qui est ton propriétaire") ||
-    message.includes("qui t'a codé") ||
-    message.includes("qui est ton maître")
-  ) {
-    return res.json({
-      status: true,
-      message: {
-        message: `C'est ${OWNER_NAME}, mon propriétaire et créateur.`,
-        sticker: getRandomSticker()
-      }
-    });
+  let stickerUrl =
+    "https://denji-api.vercel.app/stickers/denji-happy.webp";
+
+  if (lowerText.includes("fâché") || lowerText.includes("colère")) {
+    stickerUrl = "https://denji-api.vercel.app/stickers/denji-angry.webp";
   }
 
-  // Si c'est le proprio qui parle
-  if (sender === OWNER_NUMBER) {
-    return res.json({
-      status: true,
-      message: {
-        message: `Salut Maître ${OWNER_NAME} ! Je suis ton fidèle Denji.`,
-        sticker: getRandomSticker()
-      }
-    });
-  }
-
-  // Réponse basique (tu peux ici ajouter un vrai moteur IA ou une réponse plus sympa)
-  const defaultReply = `Yo, tu as dit : "${text}". C'est Denji, je t'écoute !`;
-
-  res.json({
+  const response = {
     status: true,
     message: {
-      message: defaultReply,
-      sticker: getRandomSticker()
-    }
-  });
+      message: `Denji a reçu: "${text}"`,
+      sticker: stickerUrl,
+    },
+  };
+
+  res.json(response);
 });
 
-app.listen(PORT, () => {
-  console.log(`Denji API Gemini server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`API Denji lancée sur le port ${PORT}`));
